@@ -1,10 +1,9 @@
 const {Router} = require('express');
-const Mat_Model = require('../models/material');
+const materialsModel = require('../models/material');
 const router = Router();
 
-
-router.get('/materials', (req, res) => {
-    Mat_Model.find({userId:req.user.id}) .sort({createdAt: -1}).then(mat => {
+router.get('/read', (req, res) => {
+    materialsModel.find({group: req.user.group}).then(mat => {
         res.send(mat.map(({_id, title, value, group}) =>
             ({id: _id, title, value, group})))
     }).catch((e) => {
@@ -13,13 +12,13 @@ router.get('/materials', (req, res) => {
     });
 })
 
-router.post('/materials', (req, res) => {
+router.post('/add', (req, res) => {
     const {title, value, group} = req.body;
     console.log(req.user)
-    Mat_Model
-        .create({title, value, group, userId:req.user.id})
-        .then((mat) => {
-            const {id: _id, title, value, group} = mat;
+    materialsModel
+        .create({title, value, group})
+        .then((hw) => {
+            const {id: _id, title, value, group} = hw;
             res.send({id: _id, title, value, group});
         })
         .catch((e) => {
@@ -28,9 +27,9 @@ router.post('/materials', (req, res) => {
         })
 })
 
-router.delete('/materials', async (req, res, next) => {
+router.delete('/delete', async (req, res, next) => {
     const {id} = req.body;
-    Mat_Model
+    materialsModel
         .findByIdAndDelete({ _id: id })
         .then(() => res.sendStatus(200))
         .catch((e) => {
