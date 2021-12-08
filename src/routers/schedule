@@ -1,11 +1,9 @@
 const {Router} = require('express');
-const HW_Model = require('../models/homework');
+const homeworkModel = require('../models/homework');
 const router = Router();
-const axios = require("axios");
-const {JSDOM} = require("jsdom");
 
 router.get('/homeworks', (req, res) => {
-    HW_Model.find({userId:req.user.id}) .sort({createdAt: -1}).then(hw => {
+    homeworkModel.find({userId:req.user.id}) .then(hw => {
         res.send(hw.map(({_id, value, pairId, date}) =>
             ({id: _id, value, pairId, date})))
     }).catch((e) => {
@@ -17,7 +15,7 @@ router.get('/homeworks', (req, res) => {
 router.post('/homeworks', (req, res) => {
     const {value, pairId, date} = req.body;
     console.log(req.user)
-    HW_Model
+    homeworkModel
         .create({value, pairId, date,userId:req.user.id})
         .then((hw) => {
             const {id: _id, value, pairId, date} = hw;
@@ -31,21 +29,22 @@ router.post('/homeworks', (req, res) => {
 
 router.delete('/homeworks', async (req, res, next) => {
     const {id} = req.body;
-    HW_Model
+    homeworkModel
         .findByIdAndDelete({ _id: id })
         .then(() => res.sendStatus(200))
         .catch((e) => {
-                console.log(e)
-                res.sendStatus(400);
-            })
+            console.log(e)
+            res.sendStatus(400);
+        })
 })
-
-
+const { JSDOM } = require("jsdom");
+const axios = require("axios");
+const baseUrl = 'https://student.itmo.ru/ru/timetable';
 
 router.get('/', (req, res) => {
     const { group } = req.query;
     if (!group) return res.sendStatus(404);
-    const baseUrl = 'https://student.itmo.ru/ru/timetable';
+
     const link = `${baseUrl}/${group.toUpperCase()}/${group[2]}/${group[1]}`;
 
     getSchedule(link)
