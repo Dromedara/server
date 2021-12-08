@@ -1,8 +1,8 @@
 const {Schema, model} = require('mongoose');
 const {Types: {ObjectId}} = Schema;
-const HW_Schema = new Schema(
+const homeworkSchema = new Schema(
     {
-      //  _id: Schema.Types.ObjectId,
+        //  _id: Schema.Types.ObjectId,
         value: {
             type: String,
             required: true,
@@ -29,4 +29,4 @@ const HW_Schema = new Schema(
     }
 )
 
-module.exports = model('hmwrk', HW_Schema);
+module.exports = model('homeworks', homeworkSchema);
