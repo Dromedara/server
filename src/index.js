@@ -1,11 +1,10 @@
-//Libraries import
 const express = require("express");
 const cors = require("cors");
 const mongoose = require('mongoose');
 
 
 //Server port
-const port = 4242; //Server will be available on http://localhost:4242/
+const port = 4242;
 
 const app = express();
 
@@ -20,22 +19,20 @@ const corsOptions ={
     optionSuccessStatus: 200
 }
 
-app.use(cors(corsOptions)); //this line allow to connect to server from anywhere, but it is not secure
+app.use(cors(corsOptions));
 
 const {authMiddleware} = require('./utils');
 
 //Router import and connection.
-app.use('/schedule', authMiddleware, require('./routers/schedule')); //Every request that starts with http://localhost:4242/library will go here/
-app.use('/materials', authMiddleware, require('./routers/material'));
 app.use('/user', require('./routers/user'));
+app.use('/schedule',  authMiddleware, require('./routers/schedule'));
+app.use('/materials', authMiddleware, require('./routers/material'));
+app.use('/queue', authMiddleware, require('./routers/queue'));
 
 app.get('/check', authMiddleware, (req, res) => {
     res.send(`Hello ${req.user.name}`)
 })
-
-
 app.listen(port, () => console.log(`Server is on ${port}`));
-
 //Database connection (You need to start DB before connection by CMD or MongoDBCompass)
 mongoose.connect(
     'mongodb://localhost:27017/student_app_final',
@@ -43,5 +40,4 @@ mongoose.connect(
     (error => console.log(`MongoDB connection ${error ? 'error' : 'success'}`))
 );
 
-// app.listen(3000)
 
